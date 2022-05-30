@@ -153,7 +153,45 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-
+tr{
+  border: 3px solid blue;
+  margin: 8px 0;
+}
+td{
+  border: 1.5px solid blue;  
+}
+tr > td:last-child{
+  text-align: right;
+}
+.container{
+  width:160px;
+height:30px
+}
+.progressbarprg {
+  height: 100%;
+  color: white;
+  line-height: 18px;
+  text-align: center;
+  width: 0%;
+  border-radius: 10px;
+  background-color: #007bff;
+}
+.boost,.temp{
+  width:40%;
+background:red !important;
+height:100%;
+border-right: 2px solid blue;
+}
+.big{
+  width:60px;
+  height: 100%;
+  border-right: 2px solid blue;
+}
+.small{
+  width:30px;
+  height:100%;
+  border-right: 2px solid blue;
+}
 .small-number__label{
   font-family: "Brandon Grotesque";
   font-weight: bold;
@@ -429,3 +467,43 @@ li {
   margin-right: 20px;
 }
 /* End Drawer */
+
+tr{
+  border: 3px solid blue;
+  margin: 8px 0;
+}
+td{
+  border: 1.5px solid blue;  
+}
+tr > td:last-child{
+  text-align: right;
+}
+.container{
+  width:160px;
+height:30px
+}
+.progressbarprg {
+  height: 100%;
+  color: white;
+  line-height: 18px;
+  text-align: center;
+  width: 0%;
+  border-radius: 10px;
+  background-color: #007bff;
+}
+.boost,.temp{
+  width:40%;
+background:red !important;
+height:100%;
+border-right: 2px solid blue;
+}
+.big{
+  width:60px;
+  height: 100%;
+  border-right: 2px solid blue;
+}
+.small{
+  width:30px;
+  height:100%;
+  border-right: 2px solid blue;
+}
