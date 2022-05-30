@@ -1,3 +1,4 @@
+import { useSpring, animated, config } from "react-spring";
 var Dash = React.createClass({
 	getInitialState: function () {
 		return {
@@ -112,6 +113,79 @@ var Dash = React.createClass({
 			</div>
 		);
 	},
+	createMPHTable: function(){
+		const progressBoost = useSpring({
+			width:`${this.state.mph}%`,
+			config: config.molasses
+		  });
+		const progressTemp = useSpring({
+			width:`${this.state.coolantTemp}%`,
+			config: config.molasses
+		  });
+		
+		return (
+			<table>
+			<tr>
+				<td>BOOST</td>
+				<td><img src="img1.jpg" width="30px" /></td>
+				<td><div className="container">
+					{/* <div className="boost"></div> */}
+					<div className={"progressbar"}>
+          <animated.div
+            className={"progressbarprg"}
+            style={progressBoost}
+          />
+        </div>
+					</div></td>
+				<td>0.00 <sup>x100</sup>kPa</td>
+			</tr>
+			<tr>
+				<td>OIL-PRESS</td>
+				<td><img src="img1.jpg" width="30px" /></td>
+				<td><div className="container"><div></div></div></td>
+				<td>0.00 <sup>x100</sup>kPa</td>
+			</tr>
+			<tr>
+				<td>INJECTOR</td>
+				<td><img src="img1.jpg" width="30px" /></td>
+				<td><div className="container"><div></div></div></td>
+				<td>0.0%</td>
+			</tr>
+			<tr>
+				<td>OIL-TEMP</td>
+				<td><img src="img1.jpg" width="30px" /></td>
+				<td><div className="container"><div className="big"></div></div></td>
+				<td>--- C</td>
+			</tr>
+			<tr>
+				<td>W-TEMP</td>
+				<td><img src="img1.jpg" width="30px" /></td>
+				<td><div className="container"><div className="big"></div></div></td>
+				<td>--- C</td>
+			</tr>
+			<tr>
+				<td>EXH-TEMP</td>
+				<td><img src="img1.jpg" width="30px" /></td>
+				<td><div className="container"><div className="small"></div></div></td>
+				<td>--- C</td>
+			</tr>
+			<tr>
+				<td>INT-TEMP</td>
+				<td><img src="img1.jpg" width="30px" /></td>
+				<td><div className="container">
+					{/* <div className="temp"></div> */}
+					<div className={"progressbar"}>
+          <animated.div
+            className={"progressbarprg"}
+            style={progressTemp}
+          />
+        </div>
+					</div></td>
+				<td>21 C</td>
+			</tr>
+		</table>
+		)
+	},
 	tempMarker: function (num, background) {
 		var divClass = !background ? "temp__marker" : "temp__marker--background"
 		var colors = ["#7BE7EC", "#89E8DC", "#96E9CE", "#A0EAC1", "#ABEBB4", "#BAEDA4", "#C5ED96", "#D1EE88", "#DDF07B", "#ECF16A", "#F0E966", "#F0DD68", "#F1D069", "#F2C36B", "#F3C36B", "#F4AA6E", "#F49D6F", "#F58F71", "#F58372", "#F77674"]
@@ -151,16 +225,17 @@ var Dash = React.createClass({
 		return (
 			<span className='neon-dash-container'>
 				<div className={rpmClasses}>
-					{ this.rpmMarkers() }
-					{ this.renderMPH() }
+					{/* { this.rpmMarkers() } */}
+					{this.createMPHTable()}
+					{/* { this.renderMPH() } */}
 				</div>
-				<div className="small-num__container">
+				{/* <div className="small-num__container">
 						{ this.renderSmallNumbers(this.state.rpm) }
 						<p className="small-number__label">RPM</p>
 				</div>
 				<div className="temp__container">
 						{this.tempMarkers(this.state.coolantTemp)}
-				</div>
+				</div> */}
 			</span>
 		);
 	},
