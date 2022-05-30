@@ -23,7 +23,8 @@ to help guide you through it.
 *NOTE: You must install node version v5.12 for the dash to work. Instructions on how to install a specific version of node incoming...*
 
 `sudo apt-get install nodejs npm`
-install react spring with npm i react-spring
+ ##  install react spring with
+'sudo npm i react-spring'
 
 ##### Install Chromium
 
