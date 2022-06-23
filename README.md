@@ -22,6 +22,18 @@ to help guide you through it.
 
 *NOTE: You must install node version v5.12 for the dash to work. Instructions on how to install a specific version of node incoming...*
 
+##### Install node v5.12
+
+`1 Power up your Pi, get a working console.`
+`2 Download Node. For version 5.12.0: wget "[install here](https://nodejs.org/dist/v5.12.0/node-v5.12.0-linux-armv7l.tar.xz)"`
+`3 Decompress the package: tar -xvf node-v5.12.0-linux-armv7l.tar.xz`
+`4 Copy node into your system: sudo cp -r node-v5.12.0-linux-armv7l/* /usr/local/`
+
+`sudo apt-get update`
+
+`sudo apt-get upgrade`
+
+
 `sudo apt-get install nodejs npm`
  ##  install react spring with
 'sudo npm i react-spring'
@@ -38,9 +50,9 @@ to help guide you through it.
 
 ##### Install Dash
 
-`git clone https://github.com/gregsqueeb/consultDash.git`
+`https://github.com/smart-life-tech/consultDashReview.git`
 
-`cd consultDash`
+`cd consultDashReview`
 
 `npm install`
 
@@ -53,9 +65,9 @@ Open Menu > Preferences > Default applications for LXSession
 
 Add these two entries to Autostart
 
-`@/home/pi/consultDash/startScript.sh`
+`@/home/pi/consultDashReview/startScript.sh`
 
-`@chromium-browser —kiosk --incognito file:///home/pi/consultDash/re-direct-page.html`
+`@chromium-browser —kiosk --incognito file:///home/pi/consultDashReview/re-direct-page.html`
 
 
 ### Related guides
