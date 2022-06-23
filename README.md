@@ -24,10 +24,13 @@ to help guide you through it.
 
 ##### Install node v5.12
 
-`1 Power up your Pi, get a working console.`
-`2 Download Node. For version 5.12.0: wget "[install here](https://nodejs.org/dist/v5.12.0/node-v5.12.0-linux-armv7l.tar.xz)"`
-`3 Decompress the package: tar -xvf node-v5.12.0-linux-armv7l.tar.xz`
-`4 Copy node into your system: sudo cp -r node-v5.12.0-linux-armv7l/* /usr/local/`
+1 Power up your Pi, get a working console.
+
+2 Download Node. For version 5.12.0: `wget "[install here](https://nodejs.org/dist/v5.12.0/node-v5.12.0-linux-armv7l.tar.xz)"`
+
+3 Decompress the package: `tar -xvf node-v5.12.0-linux-armv7l.tar.xz`
+
+4 Copy node into your system: `sudo cp -r node-v5.12.0-linux-armv7l/* /usr/local/`
 
 `sudo apt-get update`
 
