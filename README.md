@@ -37,7 +37,8 @@ to help guide you through it.
 `sudo apt-get upgrade`
 
 
-`sudo apt-get install nodejs npm`
+
+
  ##  install react spring with
 'sudo npm i react-spring'
 
