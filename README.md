@@ -54,9 +54,9 @@ to help guide you through it.
 
 ##### Install Dash
 
-`https://github.com/smart-life-tech/consultDashReview.git`
+`https://github.com/smart-life-tech/consultDashReviewv3.git`
 
-`cd consultDashReview`
+`cd consultDashReviewv3`
 
 `npm install`
 
