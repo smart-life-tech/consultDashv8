@@ -54,7 +54,7 @@ to help guide you through it.
 
 ##### Install Dash
 
-`git clone https://github.com/smart-life-tech/consultDashReviewv4.git`
+`git clone https://github.com/smart-life-tech/consultDashv6.git`
 
 `cd consultDashReviewv4`
 
@@ -80,7 +80,7 @@ Add these two entries to Autostart
 
 `@/home/pi/consultDashReview/startScript.sh`
 
-`@chromium-browser —kiosk --incognito file:///home/pi/consultDashReview/re-direct-page.html`
+`@chromium-browser —kiosk --incognito file:///home/pi/consultDashv6/re-direct-page.html`
 
 
 ### Related guides
