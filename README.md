@@ -65,6 +65,15 @@ to help guide you through it.
 
 `http://mausberrycircuits.com/pages/car-setup`
 
+
+#### Raspbian Jessie had Default Applications for LXsession installed by default, but Stretch and beyond do not.
+
+To install:
+
+`sudo apt -y install lxsession-default-apps`
+
+When finished, it should display automatically in the menu. If not try rebooting and making sure it is visible in the menu editor.
+
 Open Menu > Preferences > Default applications for LXSession
 
 Add these two entries to Autostart
