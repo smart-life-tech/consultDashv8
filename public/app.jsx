@@ -236,8 +236,6 @@ return (
 		return tempMarkers;
 	},
 	defaultDash: function () {
-		rpmClasses = 'rpm__container'
-		if (this.state.rpm > 6000) rpmClasses += ' rpm__container--redline';
 		return (
 				<div>
 					
@@ -297,12 +295,7 @@ return (
 			<div className="content-container">
 
 				{this.chooseDash(this.state.dash)}
-				{<div className={drawerClass}>
-					<a className="drawer-toggle drawer-toggle--open" onClick={this.toggleDrawer}><img className='dash-icon' src='./dashIcon.svg'/></a>
-					<a className="drawer-toggle drawer-toggle--close" onClick={this.toggleDrawer}><img className='close-icon' src='./close.svg'/></a>
-					<a className="dash-button" onClick={() => this.chooseDashCloseDrawer('defaultDash')}>Default Dash</a>
-					<a className="dash-button" onClick={() => this.chooseDashCloseDrawer('numbersDash')}>Numbers Dash</a>
-				</div>}
+				
 			</div>
 		);
 	}
