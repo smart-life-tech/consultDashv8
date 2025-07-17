@@ -115,9 +115,119 @@ const Dash = () => {
   };
 
   const CircularSpeedometer = ({ value, maxValue, label, unit, dangerZone = 80 }) => {
-    const percentage = (value / maxValue) * 100;
-    const angle = (percentage / 100) * 270; // 270 degrees for speedometer arc
+    const percentage = Math.min(Math.max((value / maxValue) * 100, 0), 100);
+    
+    // Configure the arc - using 240 degrees (leaves 60 degrees at bottom for labels)
+    const startAngle = 150; // Start angle in degrees (bottom left)
+    const endAngle = 390;   // End angle in degrees (bottom right) - 240 degree sweep
+    const totalArcDegrees = endAngle - startAngle; // 240 degrees
+    
+    // Calculate current angle based on value
+    const currentAngle = startAngle + (percentage / 100) * totalArcDegrees;
+    
+    // Convert angles to radians for calculations
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+    const currentRad = (currentAngle * Math.PI) / 180;
+    
+    // Arc parameters
+    const centerX = 100;
+    const centerY = 100;
+    const radius = 75;
+    
+    // Calculate arc path coordinates
+    const startX = centerX + radius * Math.cos(startRad);
+    const startY = centerY + radius * Math.sin(startRad);
+    const endX = centerX + radius * Math.cos(endRad);
+    const endY = centerY + radius * Math.sin(endRad);
+    
+    // Calculate current position for needle
+    const needleX = centerX + (radius - 10) * Math.cos(currentRad);
+    const needleY = centerY + (radius - 10) * Math.sin(currentRad);
+    
+    // Create the background arc path
+    const backgroundArcPath = `M ${startX} ${startY} A ${radius} ${radius} 0 1 1 ${endX} ${endY}`;
+    
+    // Calculate the current value arc
+    const currentX = centerX + radius * Math.cos(currentRad);
+    const currentY = centerY + radius * Math.sin(currentRad);
+    const largeArcFlag = totalArcDegrees * (percentage / 100) > 180 ? 1 : 0;
+    const valueArcPath = `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${currentX} ${currentY}`;
+    
     const color = getGaugeColor(percentage);
+    
+    // Generate tick marks
+    const generateTicks = () => {
+      const ticks = [];
+      const majorTickCount = 8; // Number of major ticks
+      const minorTickCount = 4; // Minor ticks between major ticks
+      
+      // Major ticks
+      for (let i = 0; i <= majorTickCount; i++) {
+        const tickAngle = startAngle + (i / majorTickCount) * totalArcDegrees;
+        const tickRad = (tickAngle * Math.PI) / 180;
+        const tickValue = (i / majorTickCount) * maxValue;
+        
+        const outerX = centerX + (radius - 5) * Math.cos(tickRad);
+        const outerY = centerY + (radius - 5) * Math.sin(tickRad);
+        const innerX = centerX + (radius - 15) * Math.cos(tickRad);
+        const innerY = centerY + (radius - 15) * Math.sin(tickRad);
+        
+        const labelX = centerX + (radius - 25) * Math.cos(tickRad);
+        const labelY = centerY + (radius - 25) * Math.sin(tickRad);
+        
+        ticks.push(
+          <g key={`major-${i}`}>
+            <line
+              x1={outerX}
+              y1={outerY}
+              x2={innerX}
+              y2={innerY}
+              stroke="rgba(255,255,255,0.8)"
+              strokeWidth="2"
+            />
+            <text
+              x={labelX}
+              y={labelY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              className="tick-label"
+              fontSize="10"
+              fill="rgba(255,255,255,0.9)"
+            >
+              {Math.round(tickValue)}
+            </text>
+          </g>
+        );
+        
+        // Minor ticks between major ticks
+        if (i < majorTickCount) {
+          for (let j = 1; j <= minorTickCount; j++) {
+            const minorTickAngle = tickAngle + (j / (minorTickCount + 1)) * (totalArcDegrees / majorTickCount);
+            const minorTickRad = (minorTickAngle * Math.PI) / 180;
+            
+            const minorOuterX = centerX + (radius - 5) * Math.cos(minorTickRad);
+            const minorOuterY = centerY + (radius - 5) * Math.sin(minorTickRad);
+            const minorInnerX = centerX + (radius - 10) * Math.cos(minorTickRad);
+            const minorInnerY = centerY + (radius - 10) * Math.sin(minorTickRad);
+            
+            ticks.push(
+              <line
+                key={`minor-${i}-${j}`}
+                x1={minorOuterX}
+                y1={minorOuterY}
+                x2={minorInnerX}
+                y2={minorInnerY}
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="1"
+              />
+            );
+          }
+        }
+      }
+      
+      return ticks;
+    };
     
     return (
       <div className="circular-speedometer">
@@ -125,35 +235,49 @@ const Dash = () => {
           <svg viewBox="0 0 200 200" className="speedometer-svg">
             {/* Background arc */}
             <path
-              d="M 30 170 A 85 85 0 1 1 170 170"
+              d={backgroundArcPath}
               fill="none"
               stroke="rgba(255,255,255,0.1)"
               strokeWidth="8"
+              strokeLinecap="round"
             />
+            
+            {/* Tick marks */}
+            {generateTicks()}
+            
+            {/* Danger zone arc (if applicable) */}
+            {dangerZone < maxValue && (
+              <path
+                d={`M ${centerX + radius * Math.cos(((startAngle + (dangerZone/maxValue) * totalArcDegrees) * Math.PI) / 180)} ${centerY + radius * Math.sin(((startAngle + (dangerZone/maxValue) * totalArcDegrees) * Math.PI) / 180)} A ${radius} ${radius} 0 0 1 ${endX} ${endY}`}
+                fill="none"
+                stroke="rgba(255,0,0,0.3)"
+                strokeWidth="12"
+                strokeLinecap="round"
+              />
+            )}
             
             {/* Value arc */}
             <path
-              d="M 30 170 A 85 85 0 1 1 170 170"
+              d={valueArcPath}
               fill="none"
               stroke={color}
               strokeWidth="8"
-              strokeDasharray={`${(angle/270) * 267} 267`}
               strokeLinecap="round"
               style={{
                 filter: `drop-shadow(0 0 10px ${color})`,
-                transition: 'stroke-dasharray 0.8s ease'
+                transition: 'all 0.8s ease'
               }}
             />
             
             {/* Center circle */}
-            <circle cx="100" cy="100" r="8" fill={color} />
+            <circle cx={centerX} cy={centerY} r="8" fill={color} />
             
             {/* Needle */}
             <line
-              x1="100"
-              y1="100"
-              x2={100 + 60 * Math.cos((angle - 135) * Math.PI / 180)}
-              y2={100 + 60 * Math.sin((angle - 135) * Math.PI / 180)}
+              x1={centerX}
+              y1={centerY}
+              x2={needleX}
+              y2={needleY}
               stroke={color}
               strokeWidth="3"
               strokeLinecap="round"
@@ -163,11 +287,14 @@ const Dash = () => {
               }}
             />
             
+            {/* Needle center dot */}
+            <circle cx={centerX} cy={centerY} r="4" fill="#ffffff" />
+            
             {/* Value text */}
-            <text x="100" y="130" textAnchor="middle" className="speedometer-value">
+            <text x={centerX} y={centerY + 35} textAnchor="middle" className="speedometer-value">
               {value}
             </text>
-            <text x="100" y="145" textAnchor="middle" className="speedometer-unit">
+            <text x={centerX} y={centerY + 50} textAnchor="middle" className="speedometer-unit">
               {unit}
             </text>
           </svg>
@@ -243,7 +370,6 @@ const Dash = () => {
             icon="1654014316323.jpg"
             showAlert={state.wTemp > 100}
           />
-          
           <FullScreenGauge
             label="AIR FLOW"
             value={state.airFlowVolt}
@@ -309,15 +435,151 @@ const Dash = () => {
             >
               Full Screen Dashboard
             </button>
+            <button 
+              className={`dash-option ${state.dash === 'defaultDash' ? 'active' : ''}`}
+              onClick={() => toggleDash('defaultDash')}
+            >
+              Classic Table View
+            </button>
           </div>
         )}
       </div>
       
       <div className="content-container">
-        {createFullScreenDashboard()}
+        {state.dash === 'fullscreenDash' ? createFullScreenDashboard() : createTableDashboard()}
       </div>
     </div>
   );
+
+  // Add the classic table dashboard for comparison
+  function createTableDashboard() {
+    return (
+      <div className="table-dashboard">
+        <table className="classic-table">
+          <tbody>
+            <tr>
+              <td>RPM</td>
+              <td style={{ textAlign: "center" }}>
+                <img src="1654014347028.jpg" width="30px" />
+              </td>
+              <td>
+                <div className="container" style={{ borderRight: state.showRPM ? `2px solid white` : "" }}>
+                  <div style={{ 
+                    width: `${calculatePercentage(state.rpm, 8000)}%`, 
+                    height: "100%", 
+                    background: `${state.rpm > 7500 ? "red" : "#4dfa40"}`, 
+                    borderRight: !state.showRPM ? `2px solid white` : "" 
+                  }}></div>
+                </div>
+              </td>
+              <td>{state.rpm} rpm</td>
+            </tr>
+            <tr>
+              <td>THROTTLE</td>
+              <td style={{ textAlign: "center" }}>
+                <img src="1654014342705.jpg" width="30px" />
+              </td>
+              <td className="td">
+                <div className="container" style={{ borderRight: state.showTV ? `2px solid white` : "" }}>
+                  <div style={{ 
+                    width: `${state.throttleVolt}%`, 
+                    height: "100%", 
+                    background: "#4dfa40", 
+                    borderRight: !state.showTV ? `2px solid white` : "" 
+                  }}></div>
+                </div>
+              </td>
+              <td className="td2">{state.throttleVolt} %</td>
+            </tr>
+            <tr>
+              <td>AIR FLOW</td>
+              <td style={{ textAlign: "center" }}>
+                <img src="1654014323912.jpg" width="30px" />
+              </td>
+              <td>
+                <div className="container" style={{ borderRight: state.showAFV ? `2px solid white` : "" }}>
+                  <div style={{ 
+                    width: `${calculatePercentage(state.airFlowVolt, 6)}%`, 
+                    height: "100%", 
+                    background: "#4dfa40", 
+                    borderRight: !state.showAFV ? `2px solid white` : "" 
+                  }}></div>
+                </div>
+              </td>
+              <td>{state.airFlowVolt} volt</td>
+            </tr>
+            <tr>
+              <td>BATTERY</td>
+              <td style={{ textAlign: "center" }}>
+                <img src="1654014320355.jpg" width="30px" />
+              </td>
+              <td>
+                <div className="container" style={{ borderRight: state.showAFV ? `2px solid white` : "" }}>
+                  <div style={{ 
+                    width: `${calculatePercentage(state.batteryVolt, 16)}%`, 
+                    height: "100%", 
+                    background: "#4dfa40", 
+                    borderRight: !state.showAFV ? `2px solid white` : "" 
+                  }}></div>
+                </div>
+              </td>
+              <td>{state.batteryVolt} volt</td>
+            </tr>
+            <tr>
+              <td>W-TEMP</td>
+              <td style={{ textAlign: "center" }}>
+                <img src="1654014316323.jpg" width="30px" />
+              </td>
+              <td className="td">
+                <div className="container" style={{ borderRight: state.showTV ? `2px solid white` : "" }}>
+                  <div style={{ 
+                    width: `${calculatePercentage(state.wTemp, 120)}%`, 
+                    height: "100%", 
+                    background: "#4dfa40", 
+                    borderRight: !state.showTV ? `2px solid white` : "" 
+                  }}></div>
+                </div>
+              </td>
+              <td>{state.wTemp} &#176;C</td>
+            </tr>
+            <tr>
+              <td>INT-TEMP</td>
+              <td style={{ textAlign: "center" }}>
+                <img src="1654014330436.jpg" width="30px" />
+              </td>
+              <td>
+                <div className="container" style={{ borderRight: state.showAFV ? `2px solid white` : "" }}>
+                  <div style={{ 
+                    width: `${calculatePercentage(state.intTemp, 120)}%`, 
+                    height: "100%", 
+                    background: "#4dfa40", 
+                    borderRight: !state.showAFV ? `2px solid white` : "" 
+                  }}></div>
+                </div>
+              </td>
+              <td>{state.intTemp} &#176;C</td>
+            </tr>
+            <tr>
+              <td>SPEED</td>
+              <td style={{ textAlign: "center" }}>
+                <img src="1654014335661.jpg" width="30px" />
+              </td>
+              <td>
+                <div className="container" style={{ borderRight: "2px solid white" }}>
+                  <div style={{ 
+                    width: `${calculatePercentage(state.mph, 240)}%`, 
+                    height: "100%", 
+                    background: "#4dfa40" 
+                  }}></div>
+                </div>
+              </td>
+              <td>{state.mph} kph</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 };
 
 ReactDOM.render(<Dash />, document.getElementById('content'));

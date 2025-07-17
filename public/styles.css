@@ -214,7 +214,60 @@ body::before {
   padding: 30px;
   overflow-y: auto;
 }
+/* Classic Table Dashboard */
+.table-dashboard {
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.classic-table {
+  width: 100%;
+  max-width: 1200px;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.classic-table td {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  vertical-align: middle;
+}
+
+.classic-table tr:last-child td {
+  border-bottom: none;
+}
+
+.classic-table tr:hover {
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.container {
+  width: 300px;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.container > div {
+  height: 100%;
+  border-radius: 15px;
+  transition: width 1s ease;
+  position: relative;
+}
 /* Primary Section - Circular Speedometers */
 .primary-section {
   display: flex;
