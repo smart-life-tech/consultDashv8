@@ -1,308 +1,323 @@
-var Dash = React.createClass({
-	getInitialState: function () {
-		return {
-			rpm: 0,
-			mph: 0,
-			airFlowVoltPercent: 0,
-			coolantTemp: 0,
-			dash: "defaultDash",
-			drawer: false,
-			airFlowVolt: 0,
-			wTemp: 0,
-			throttleVolt: 0,
-			batteryVolt: 0,
-			showRPM: false,
-			showTV: false,
-			showAFV: false,
-			RPMPercent: 0
-		};
-	},
-	componentDidMount: function () {
-		var that = this;
-		this.socket = io();
-		this.socket.on('ecuData', function (data) {
-			that.setState({ rpm: data.rpm });
-			that.setState({ mph: data.mph.toFixed(0) })
-			that.setState({
-				intTemp: data.coolantTemp.toFixed(0),
-				airFlowVolt: data.airFlowVolt.toFixed(2),
-				wTemp: data.wTemp.toFixed(0),
-				throttleVolt: data.throttleVolt.toFixed(0),
-				batteryVolt: data.batteryVolt.toFixed(1)
-			});
-			that.setState({
-				RPMPercent: data.rpm / 8000 * 100,
-				mphPercent: data.mph / 240 * 100,
-				intTempPercent: data.coolantTemp / 120 * 100,
-				wTempPercent: data.wTemp / 120 * 100,
-				batteryVoltPercent: data.batteryVolt / 16 * 100,
-				airFlowVoltPercent: data.airFlowVolt / 6 * 100,
-				showRPM: data.rpm >= 8000 && !that.state.showRPM ? true : that.state.showRPM,
-				showAFV: data.airFlowVolt >= 510 && !that.state.showAFV ? true : that.state.showAFV,
-				showTV: data.throttleVolt >= 98 && !that.state.showTV ? true : that.state.showTV
-			})
-		});
-		this.socket.emit('fetchComments');
-	},
-	createMPHTable: function () {
-		return (
-			<table>
-				<tr>
+const { useState, useEffect } = React;
 
-					<td>RPM</td>
-					<td style={{ textAlign: "center" }}><img src="1654014347028.jpg" width="30px" /></td>
-					<td><div className="container" style={{ borderRight: this.state.showRPM ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.RPMPercent}%`, height: "100%", background: `${this.state.rpm > 7500 ? "red" : "#4dfa40"}`, borderRight: !this.state.showRPM ? `2px solid white` : "" }}></div>
-					</div></td>
-					<td>{this.state.rpm} rpm</td>
-				</tr>
-				<tr>
-					<td>THROTTLE</td>
-					<td style={{ textAlign: "center" }}><img src="1654014342705.jpg" width="30px" /></td>
-					<td className="td"><div className="container" style={{ borderRight: this.state.showTV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.throttleVolt}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showTV ? `2px solid white` : "" }}></div>
-					</div></td>
-					<td className="td2">{this.state.throttleVolt} %</td>
-				</tr>
-				<tr>
-					<td>AIR FLOW</td>
-					<td style={{ textAlign: "center" }}><img src="1654014323912.jpg" width="30px" /></td>
-					<td><div className="container" style={{ borderRight: this.state.showAFV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.airFlowVoltPercent}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
-					</div></td>
-					<td>{this.state.airFlowVolt} volt</td>
-				</tr>
-				<tr>
-					<td>BATTERY</td>
-					<td style={{ textAlign: "center" }}><img src="1654014320355.jpg" width="30px" /></td>
-					<td><div className="container" style={{ borderRight: this.state.showAFV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.batteryVoltPercent}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
-					</div></td>
-					<td>{this.state.batteryVolt} volt</td>
-				</tr>
-				<tr>
-					<td>W-TEMP</td>
-					<td style={{ textAlign: "center" }}><img src="1654014316323.jpg" width="30px" /></td>
-					<td className="td"><div className="container" style={{ borderRight: this.state.showTV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.wTempPercent}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showTV ? `2px solid white` : "" }}></div>
-					</div></td>
-					<td>{this.state.wTemp} &#176;C</td>
-				</tr>
-				<tr>
-					<td>INT-TEMP</td>
-					<td style={{ textAlign: "center" }}><img src="1654014330436.jpg" width="30px" /></td>
-					<td><div className="container" style={{ borderRight: this.state.showAFV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.intTempPercent}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
-					</div></td>
-					<td>{this.state.intTemp} &#176;C</td>
+const Dash = () => {
+  const [state, setState] = useState({
+    rpm: 0,
+    mph: 0,
+    coolantTemp: 0,
+    dash: "fullscreenDash",
+    drawer: false,
+    airFlowVolt: 0,
+    wTemp: 0,
+    throttleVolt: 0,
+    batteryVolt: 0,
+    showRPM: false,
+    showTV: false,
+    showAFV: false,
+    intTemp: 0
+  });
 
-				</tr>
+  // Helper function to format numbers with proper decimal places
+  const formatValue = (value, decimals = 0) => {
+    const num = parseFloat(value) || 0;
+    return decimals > 0 ? parseFloat(num.toFixed(decimals)) : Math.round(num);
+  };
 
-				<tr>
-					<td>SPEED</td>
-					<td style={{ textAlign: "center" }}><img src="1654014335661.jpg" width="30px" /></td>
-					<td><div className="container" style={{ borderRight: "2px solid white" }}>
-						<div style={{ width: `${this.state.mphPercent}%`, height: "100%", background: "#4dfa40", }}></div>
-					</div></td>
-					<td>{this.state.mph} kph</td>
-				</tr>
-			</table>
-		)
-	},
-	needlePosition: function (rpm) {
-		percentRPM = rpm / 12000 * 360 + 90;
-		needleStyle = {
-			transform: 'rotate(' + percentRPM + 'deg)'
-		};
-		return needleStyle;
-	},
-	rpmMarker: function (num, background) {
-		var rotatePercent = num / 100 * 360 + 180
-		tickStyle = {
-			transform: 'rotate(' + rotatePercent + 'deg)'
-		}
-		var divClass = !background ? "rpm__marker" : "rpm__marker--background"
-		return (
-			<div style={tickStyle} className={divClass}></div>
-		);
-	},
-	backgroundMarkers: function () {
-		var rpmMarkers = []
-		for (var i = 0; i < 75; i++) {
-			rpmMarkers.push(this.rpmMarker(i, true));
-		}
-		return rpmMarkers;
-	},
-	rpmMarkers: function () {
-		var percentRPM = this.state.rpm / 120;
-		var rpmMarkers = []
-		var background = false
-		for (var i = 0; i < 75; i++) {
-			if (i > percentRPM) {
-				background = true
-			}
-			rpmMarkers.push(this.rpmMarker(i, background));
-		}
-		return rpmMarkers;
-	},
-	renderMPH: function () {
-		var mph = this.state.mph;
-		var hundreds = "mph__number mph__number";
-		var tens = "mph__number mph__number";
-		var ones = "mph__number mph__number";
-		if (mph > 100) {
-			hundreds += "--" + (mph + "")[0]
-			tens += "--" + (mph + "")[1]
-			ones += "--" + (mph % 10)
-		} else if (mph > 9) {
-			tens += "--" + (mph + "")[0]
-			ones += "--" + (mph % 10)
-		} else {
-			ones += "--" + (mph % 10)
-		}
-		return (
-			<div className="mph__container">
-				<div className="mph--background"><span className='mph__number--default'></span><span className='mph__number--default'></span><span className='mph__number--default'></span></div>
-				<div className="mph"><span className={hundreds}></span><span className={tens}></span><span className={ones}></span></div>
-				<p className="mph__label">MPH</p>
-			</div>
-		);
-	},
-	renderSmallNumbers: function (number) {
-		var rpm = number;
-		var thousands = "small-number small-number";
-		var hundreds = "small-number small-number";
-		var tens = "small-number small-number";
-		var ones = "small-number small-number";
-		var commaClass = rpm > 999 ? "small-number--comma" : "small-number--hidden-comma"
-		if (rpm > 999) {
-			thousands += "--" + (rpm + "")[0]
-			hundreds += "--" + (rpm + "")[1]
-			tens += "--" + (rpm + "")[2]
-			ones += "--" + (rpm + "")[3]
-		} else if (rpm > 99) {
-			thousands += "--default"
-			hundreds += "--" + (rpm + "")[0]
-			tens += "--" + (rpm + "")[1]
-			ones += "--" + (rpm % 10)
-		} else if (rpm > 9) {
-			thousands += "--default"
-			hundreds += "--default"
-			tens += "--" + (rpm + "")[0]
-			ones += "--" + (rpm % 10)
-		} else {
-			thousands += "--default"
-			hundreds += "--default"
-			tens += "--default"
-			ones += "--" + (rpm % 10)
-		}
-		return (
-			<div className="rpm-num__container">
-				<div className="rpm"><span className={thousands}></span><span className={commaClass}><img className='comma-image' src='./comma.svg' /></span><span className={hundreds}></span><span className={tens}></span><span className={ones}></span></div>
-				<div className="rpm--background"><span className='small-number--default'></span><span className='small-number--default'></span><span className='small-number--default'></span><span className='small-number--default'></span></div>
-			</div>
-		);
-	},
-	tempMarker: function (num, background) {
-		var divClass = !background ? "temp__marker" : "temp__marker--background"
-		var colors = ["#7BE7EC", "#89E8DC", "#96E9CE", "#A0EAC1", "#ABEBB4", "#BAEDA4", "#C5ED96", "#D1EE88", "#DDF07B", "#ECF16A", "#F0E966", "#F0DD68", "#F1D069", "#F2C36B", "#F3C36B", "#F4AA6E", "#F49D6F", "#F58F71", "#F58372", "#F77674"]
-		style = {}
-		if (!background) {
-			style = {
-				backgroundColor: colors[num - 1]
-			}
-		}
-		return (
-			<div style={style} className={divClass}></div>
-		);
-	},
-	tempMarkers: function (temp) {
-		tempPercent = temp / 210 * 20
-		var tempMarkers = []
-		background = true;
+  // Helper function to calculate percentage
+  const calculatePercentage = (value, max) => {
+    return Math.min(Math.max(((parseFloat(value) || 0) / max) * 100, 0), 100);
+  };
 
-		for (var i = 20; i > 0; i = i - 1) {
-			if (tempPercent > i) {
-				background = false;
-			}
-			tempMarkers.push(this.tempMarker(i, background));
-		}
-		return tempMarkers;
-	},
-	backgroundTempMarkers: function () {
-		var tempMarkers = []
-		for (var i = 0; i < 20; i++) {
-			tempMarkers.push(this.tempMarker(i, true));
-		}
-		return tempMarkers;
-	},
-	defaultDash: function () {
-		return (
-			<div>
+  useEffect(() => {
+    const socket = io();
+    
+    socket.on('ecuData', (data) => {
+      const rpmValue = data.rpm || 0;
+      const mphValue = data.mph || 0;
+      const coolantTempValue = data.coolantTemp || 0;
+      const airFlowVoltValue = data.airFlowVolt || 0;
+      const wTempValue = data.wTemp || 0;
+      const throttleVoltValue = data.throttleVolt || 0;
+      const batteryVoltValue = data.batteryVolt || 0;
 
-				{this.createMPHTable()}
-			</div>
-		);
-	},
-	numbersDash: function () {
-		return (
-			<span className='neon-dash-container'>
-				<ul>
-					<li className='rpm-column'>
-						{this.renderSmallNumbers(this.state.rpm)}
-						<p className="small-number__label">RPM</p>
-					</li>
-					<li className='mph-column'>
-						{this.renderMPH()}
-					</li>
-					<li className='temp-column'>
-						{this.renderSmallNumbers(this.state.coolantTemp)}
-						<p className="small-number__label">Coolant Temp</p>
-					</li>
-				</ul>
-			</span>
-		);
-	},
-	chooseDash: function (dashChoice) {
-		var dash = {}
-		this.state.dash = dashChoice;
-		switch (dashChoice) {
-			case "defaultDash":
-				dash = this.defaultDash();
-				break;
-			case "numbersDash":
-				dash = this.numbersDash();
-				break;
-			default:
-				dash = this.defaultDash();
-		}
-		return (
-			dash
-		);
-	},
-	chooseDashCloseDrawer: function (dashChoice) {
-		this.state.drawer = !this.state.drawer;
-		this.chooseDash(dashChoice);
-	},
-	toggleDrawer: function (dashChoice) {
-		this.state.drawer = !this.state.drawer;
-	},
+      setState(prevState => ({
+        ...prevState,
+        rpm: formatValue(rpmValue, 0),
+        mph: formatValue(mphValue, 0),
+        intTemp: formatValue(coolantTempValue, 0),
+        airFlowVolt: formatValue(airFlowVoltValue, 2),
+        wTemp: formatValue(wTempValue, 0),
+        throttleVolt: formatValue(throttleVoltValue, 0),
+        batteryVolt: formatValue(batteryVoltValue, 2),
+        showRPM: rpmValue >= 7500,
+        showAFV: airFlowVoltValue >= 5.1,
+        showTV: throttleVoltValue >= 90
+      }));
+    });
 
-	render: function () {
-		drawerClass = 'dash-changer__container'
-		if (this.state.drawer) drawerClass += ' open'
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
-		return (
-			<div className="content-container">
+  const getGaugeColor = (percentage) => {
+    if (percentage <= 60) return '#00ff41'; // Green
+    if (percentage <= 85) return '#ffff00'; // Yellow
+    return '#ff0000'; // Red
+  };
 
-				{this.chooseDash(this.state.dash)}
+  const FullScreenGauge = ({ label, value, maxValue, unit, icon, showAlert, isLarge = false }) => {
+    const percentage = calculatePercentage(value, maxValue);
+    const color = getGaugeColor(percentage);
+    
+    return (
+      <div className={`fullscreen-gauge ${showAlert ? 'alert' : ''} ${isLarge ? 'large' : ''}`}>
+        <div className="gauge-header">
+          <div className="gauge-icon-container">
+            <img src={icon} alt={label} className="gauge-icon" />
+          </div>
+          <div className="gauge-info">
+            <span className="gauge-label">{label}</span>
+            <div className="gauge-value">
+              <span className="value-number">{value}</span>
+              <span className="value-unit">{unit}</span>
+            </div>
+          </div>
+          {showAlert && <div className="alert-indicator">⚠️</div>}
+        </div>
+        
+        <div className="gauge-container">
+          <div className="gauge-track">
+            {/* Background segments for visual reference */}
+            <div className="gauge-segments">
+              <div className="segment green" style={{width: '60%'}}></div>
+              <div className="segment yellow" style={{width: '25%'}}></div>
+              <div className="segment red" style={{width: '15%'}}></div>
+            </div>
+            
+            {/* Actual fill bar */}
+            <div 
+              className="gauge-fill"
+              style={{ 
+                width: `${percentage}%`,
+                backgroundColor: color,
+                boxShadow: `0 0 20px ${color}80, inset 0 0 20px ${color}40`
+              }}
+            >
+              <div className="gauge-shine"></div>
+            </div>
+          </div>
+          
+          <div className="gauge-percentage">{percentage.toFixed(1)}%</div>
+        </div>
+      </div>
+    );
+  };
 
-			</div>
-		);
-	}
-});
+  const CircularSpeedometer = ({ value, maxValue, label, unit, dangerZone = 80 }) => {
+    const percentage = (value / maxValue) * 100;
+    const angle = (percentage / 100) * 270; // 270 degrees for speedometer arc
+    const color = getGaugeColor(percentage);
+    
+    return (
+      <div className="circular-speedometer">
+        <div className="speedometer-container">
+          <svg viewBox="0 0 200 200" className="speedometer-svg">
+            {/* Background arc */}
+            <path
+              d="M 30 170 A 85 85 0 1 1 170 170"
+              fill="none"
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth="8"
+            />
+            
+            {/* Value arc */}
+            <path
+              d="M 30 170 A 85 85 0 1 1 170 170"
+              fill="none"
+              stroke={color}
+              strokeWidth="8"
+              strokeDasharray={`${(angle/270) * 267} 267`}
+              strokeLinecap="round"
+              style={{
+                filter: `drop-shadow(0 0 10px ${color})`,
+                transition: 'stroke-dasharray 0.8s ease'
+              }}
+            />
+            
+            {/* Center circle */}
+            <circle cx="100" cy="100" r="8" fill={color} />
+            
+            {/* Needle */}
+            <line
+              x1="100"
+              y1="100"
+              x2={100 + 60 * Math.cos((angle - 135) * Math.PI / 180)}
+              y2={100 + 60 * Math.sin((angle - 135) * Math.PI / 180)}
+              stroke={color}
+              strokeWidth="3"
+              strokeLinecap="round"
+              style={{
+                filter: `drop-shadow(0 0 5px ${color})`,
+                transition: 'all 0.8s ease'
+              }}
+            />
+            
+            {/* Value text */}
+            <text x="100" y="130" textAnchor="middle" className="speedometer-value">
+              {value}
+            </text>
+            <text x="100" y="145" textAnchor="middle" className="speedometer-unit">
+              {unit}
+            </text>
+          </svg>
+        </div>
+        <div className="speedometer-label">{label}</div>
+      </div>
+    );
+  };
 
-React.render(
-	<Dash />,
-	document.getElementById('content')
-);
+  const createFullScreenDashboard = () => (
+    <div className="fullscreen-dashboard">
+      {/* Top Status Bar */}
+      <div className="status-bar">
+        <div className="status-left">
+          <h1 className="dashboard-title">ECU DASHBOARD</h1>
+          <div className="connection-status">
+            <div className="status-indicator active"></div>
+            <span>CONNECTED</span>
+          </div>
+        </div>
+        <div className="status-right">
+          <div className="time-display">{new Date().toLocaleTimeString()}</div>
+        </div>
+      </div>
+
+      {/* Main Dashboard Grid */}
+      <div className="dashboard-grid">
+        {/* Left Column - Primary Gauges */}
+        <div className="left-column">
+          <div className="primary-section">
+            <CircularSpeedometer
+              value={state.rpm}
+              maxValue={8000}
+              label="RPM"
+              unit="rpm"
+              dangerZone={7000}
+            />
+            <CircularSpeedometer
+              value={state.mph}
+              maxValue={240}
+              label="SPEED"
+              unit="kph"
+              dangerZone={200}
+            />
+          </div>
+        </div>
+
+        {/* Right Column - Secondary Gauges */}
+        <div className="right-column">
+          <FullScreenGauge
+            label="THROTTLE POSITION"
+            value={state.throttleVolt}
+            maxValue={100}
+            unit="%"
+            icon="1654014342705.jpg"
+            showAlert={state.showTV}
+          />
+          
+          <FullScreenGauge
+            label="COOLANT TEMP"
+            value={state.intTemp}
+            maxValue={120}
+            unit="°C"
+            icon="1654014330436.jpg"
+            showAlert={state.intTemp > 100}
+          />
+          
+          <FullScreenGauge
+            label="WATER TEMP"
+            value={state.wTemp}
+            maxValue={120}
+            unit="°C"
+            icon="1654014316323.jpg"
+            showAlert={state.wTemp > 100}
+          />
+          
+          <FullScreenGauge
+            label="AIR FLOW"
+            value={state.airFlowVolt}
+            maxValue={6}
+            unit="V"
+            icon="1654014323912.jpg"
+            showAlert={state.showAFV}
+          />
+          
+          <FullScreenGauge
+            label="BATTERY VOLTAGE"
+            value={state.batteryVolt}
+            maxValue={16}
+            unit="V"
+            icon="1654014320355.jpg"
+            showAlert={state.batteryVolt < 12}
+          />
+        </div>
+      </div>
+
+      {/* Bottom Alert Bar */}
+      <div className="alert-bar">
+        {(state.showRPM || state.showTV || state.showAFV || state.intTemp > 100) && (
+          <div className="alert-message">
+            <span className="alert-icon">⚠️</span>
+            <span>SYSTEM ALERT: Check highlighted parameters</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const toggleDash = (dashType) => {
+    setState(prevState => ({
+      ...prevState,
+      dash: dashType,
+      drawer: false
+    }));
+  };
+
+  const toggleDrawer = () => {
+    setState(prevState => ({
+      ...prevState,
+      drawer: !prevState.drawer
+    }));
+  };
+
+  return (
+    <div className="app-container">
+      <div className="dashboard-controls">
+        <button 
+          className="control-button"
+          onClick={toggleDrawer}
+        >
+          ⚙️
+        </button>
+        
+        {state.drawer && (
+          <div className="settings-drawer">
+            <button 
+              className={`dash-option ${state.dash === 'fullscreenDash' ? 'active' : ''}`}
+              onClick={() => toggleDash('fullscreenDash')}
+            >
+              Full Screen Dashboard
+            </button>
+          </div>
+        )}
+      </div>
+      
+      <div className="content-container">
+        {createFullScreenDashboard()}
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.render(<Dash />, document.getElementById('content'));
