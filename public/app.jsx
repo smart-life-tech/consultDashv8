@@ -73,12 +73,12 @@ const Dash = () => {
 		return '#ff0000'; // Red - low battery (bad)
 	};
 
-	const FullScreenGauge = ({ label, value, maxValue, unit, icon, showAlert, isLarge = false, isBattery = false }) => {
+	const FullScreenGauge = ({ label, value, maxValue, unit, icon, showAlert, isLarge = false, isBattery = false, isCompact = false }) => {
 		const percentage = calculatePercentage(value, maxValue);
 		const color = isBattery ? getBatteryColor(percentage) : getGaugeColor(percentage);
 
 		return (
-			<div className={`fullscreen-gauge ${showAlert ? 'alert' : ''} ${isLarge ? 'large' : ''}`}>
+			<div className={`fullscreen-gauge ${showAlert ? 'alert' : ''} ${isLarge ? 'large' : ''} ${isCompact ? 'compact' : ''}`}>
 				<div className="gauge-header">
 					<div className="gauge-icon-container">
 						<img src={icon} alt={label} className="gauge-icon" />
@@ -324,7 +324,7 @@ const Dash = () => {
 	};
 
 	const createFullScreenDashboard = () => (
-		<div className="fullscreen-dashboard">
+		<div className="car-dashboard">
 			{/* Top Status Bar */}
 			<div className="status-bar">
 				<div className="status-left">
@@ -334,91 +334,116 @@ const Dash = () => {
 						<span>CONNECTED</span>
 					</div>
 				</div>
+				<div className="status-center">
+					<div className="vehicle-status">VEHICLE ONLINE</div>
+				</div>
 				<div className="status-right">
 					<div className="time-display">{new Date().toLocaleTimeString()}</div>
 				</div>
 			</div>
 
-			{/* Main Dashboard Grid */}
-			<div className="dashboard-grid">
-				{/* Left Column - Primary Gauges (Made Larger) */}
-				<div className="left-column">
-					<div className="primary-section">
-						<CircularSpeedometer
-							value={state.rpm}
-							maxValue={8000}
-							label="RPM"
-							unit="rpm"
-							dangerZone={7000}
-							isLarge={true}
+			{/* Main Dashboard - Car Layout */}
+			<div className="car-dashboard-grid">
+				{/* Left Side - RPM */}
+				<div className="left-primary-gauge">
+					<CircularSpeedometer
+						value={state.rpm}
+						maxValue={8000}
+						label="RPM"
+						unit="rpm"
+						dangerZone={7000}
+						isLarge={true}
+					/>
+				</div>
+
+				{/* Center Top Row - Secondary Gauges */}
+				<div className="center-top-row">
+					<div className="center-gauge-small">
+						<FullScreenGauge
+							label="COOLANT"
+							value={state.intTemp}
+							maxValue={120}
+							unit="°C"
+							icon="1654014330436.jpg"
+							showAlert={state.intTemp > 100}
+							isCompact={true}
 						/>
-						<CircularSpeedometer
-							value={state.mph}
-							maxValue={240}
-							label="SPEED"
-							unit="kph"
-							dangerZone={200}
-							isLarge={true}
+					</div>
+					<div className="center-gauge-small">
+						<FullScreenGauge
+							label="WATER"
+							value={state.wTemp}
+							maxValue={120}
+							unit="°C"
+							icon="1654014316323.jpg"
+							showAlert={state.wTemp > 100}
+							isCompact={true}
+						/>
+					</div>
+					<div className="center-gauge-small">
+						<FullScreenGauge
+							label="BATTERY"
+							value={state.batteryVolt}
+							maxValue={16}
+							unit="V"
+							icon="1654014320355.jpg"
+							showAlert={state.batteryVolt < 12}
+							isBattery={true}
+							isCompact={true}
 						/>
 					</div>
 				</div>
 
-				{/* Right Column - Secondary Gauges */}
-				<div className="right-column">
-					<FullScreenGauge
-						label="THROTTLE POSITION"
-						value={state.throttleVolt}
-						maxValue={100}
-						unit="%"
-						icon="1654014342705.jpg"
-						showAlert={state.showTV}
-					/>
+				{/* Center Bottom Row - Additional Gauges */}
+				<div className="center-bottom-row">
+					<div className="center-gauge-medium">
+						<FullScreenGauge
+							label="THROTTLE"
+							value={state.throttleVolt}
+							maxValue={100}
+							unit="%"
+							icon="1654014342705.jpg"
+							showAlert={state.showTV}
+						/>
+					</div>
+					<div className="center-gauge-medium">
+						<FullScreenGauge
+							label="AIR FLOW"
+							value={state.airFlowVolt}
+							maxValue={6}
+							unit="V"
+							icon="1654014323912.jpg"
+							showAlert={state.showAFV}
+						/>
+					</div>
+				</div>
 
-					<FullScreenGauge
-						label="COOLANT TEMP"
-						value={state.intTemp}
-						maxValue={120}
-						unit="°C"
-						icon="1654014330436.jpg"
-						showAlert={state.intTemp > 100}
-					/>
-
-					<FullScreenGauge
-						label="WATER TEMP"
-						value={state.wTemp}
-						maxValue={120}
-						unit="°C"
-						icon="1654014316323.jpg"
-						showAlert={state.wTemp > 100}
-					/>
-
-					<FullScreenGauge
-						label="AIR FLOW"
-						value={state.airFlowVolt}
-						maxValue={6}
-						unit="V"
-						icon="1654014323912.jpg"
-						showAlert={state.showAFV}
-					/>
-
-					<FullScreenGauge
-						label="BATTERY VOLTAGE"
-						value={state.batteryVolt}
-						maxValue={16}
-						unit="V"
-						icon="1654014320355.jpg"
-						showAlert={state.batteryVolt < 12}
-						isBattery={true}
+				{/* Right Side - Speed */}
+				<div className="right-primary-gauge">
+					<CircularSpeedometer
+						value={state.mph}
+						maxValue={240}
+						label="SPEED"
+						unit="kph"
+						dangerZone={200}
+						isLarge={true}
 					/>
 				</div>
 			</div>
 
 			{/* Bottom Alert Bar */}
 			<div className="alert-bar">
-				{(state.showRPM || state.showTV || state.showAFV || state.intTemp > 100) && (
+				{(state.showRPM || state.showTV || state.showAFV || state.intTemp > 100 || state.batteryVolt < 12) && (
 					<div className="alert-message">
 						<span className="alert-icon">⚠️</span>
 						<span>SYSTEM ALERT: Check highlighted parameters</span>
+						<div className="alert-details">
+							{state.showRPM && <span className="alert-item">RPM</span>}
+							{state.showTV && <span className="alert-item">THROTTLE</span>}
+							{state.showAFV && <span className="alert-item">AIRFLOW</span>}
+							{state.intTemp > 100 && <span className="alert-item">COOLANT</span>}
+							{state.batteryVolt < 12 && <span className="alert-item">BATTERY</span>}
+						</div>
 					</div>
 				)}
 			</div>
