@@ -52,7 +52,7 @@ var Dash = React.createClass({
 					<td>RPM</td>
 					<td style={{ textAlign: "center" }}><img src="1654014347028.jpg" width="30px" /></td>
 					<td><div className="container" style={{ borderRight: this.state.showRPM ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.RPMPercent}%`, height: "100%", background: `${this.state.rpm > 7500 ? "red" : "#4dfa40"}`, borderRight: !this.state.showRPM ? `2px solid white` : "" }}></div>
+						<div style={{ width: `${this.state.RPMPercent}%`, height: "100%", background: `${this.state.rpm > 7500 ? "red" : this.state.rpm >= 5000 ? "yellow" : "#4dfa40"}`, borderRight: !this.state.showRPM ? `2px solid white` : "" }}></div>
 					</div></td>
 					<td>{this.state.rpm} rpm</td>
 				</tr>
@@ -60,7 +60,7 @@ var Dash = React.createClass({
 					<td>THROTTLE</td>
 					<td style={{ textAlign: "center" }}><img src="1654014342705.jpg" width="30px" /></td>
 					<td className="td"><div className="container" style={{ borderRight: this.state.showTV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.throttleVolt}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showTV ? `2px solid white` : "" }}></div>
+						<div style={{ width: `${this.state.throttleVolt}%`, height: "100%", background: `${this.state.throttleVolt > 98 ? "red" : this.state.throttleVolt >= 70 ? "yellow" : "#4dfa40"}`, borderRight: !this.state.showTV ? `2px solid white` : "" }}></div>
 					</div></td>
 					<td className="td2">{this.state.throttleVolt} %</td>
 				</tr>
@@ -68,7 +68,7 @@ var Dash = React.createClass({
 					<td>AIR FLOW</td>
 					<td style={{ textAlign: "center" }}><img src="1654014323912.jpg" width="30px" /></td>
 					<td><div className="container" style={{ borderRight: this.state.showAFV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.airFlowVoltPercent}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
+						<div style={{ width: `${this.state.airFlowVoltPercent}%`, height: "100%", background: `${this.state.airFlowVolt > 5.1 ? "red" : this.state.airFlowVolt >= 3.5 ? "yellow" : "#4dfa40"}`, borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
 					</div></td>
 					<td>{this.state.airFlowVolt} volt</td>
 				</tr>
@@ -76,7 +76,7 @@ var Dash = React.createClass({
 					<td>BATTERY</td>
 					<td style={{ textAlign: "center" }}><img src="1654014320355.jpg" width="30px" /></td>
 					<td><div className="container" style={{ borderRight: this.state.showAFV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.batteryVoltPercent}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
+						<div style={{ width: `${this.state.batteryVoltPercent}%`, height: "100%", background: `${this.state.batteryVolt > 13.8 ? "#4dfa40" : this.state.batteryVolt >= 10.0 ? "yellow" : "red"}`, borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
 					</div></td>
 					<td>{this.state.batteryVolt} volt</td>
 				</tr>
@@ -84,7 +84,7 @@ var Dash = React.createClass({
 					<td>W-TEMP</td>
 					<td style={{ textAlign: "center" }}><img src="1654014316323.jpg" width="30px" /></td>
 					<td className="td"><div className="container" style={{ borderRight: this.state.showTV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.wTempPercent}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showTV ? `2px solid white` : "" }}></div>
+						<div style={{ width: `${this.state.wTempPercent}%`, height: "100%", background: `${this.state.wTemp > 100 ? "red" : this.state.wTemp >= 70 ? "yellow" : "#4dfa40"}`, borderRight: !this.state.showTV ? `2px solid white` : "" }}></div>
 					</div></td>
 					<td>{this.state.wTemp} &#176;C</td>
 				</tr>
@@ -92,7 +92,7 @@ var Dash = React.createClass({
 					<td>INT-TEMP</td>
 					<td style={{ textAlign: "center" }}><img src="1654014330436.jpg" width="30px" /></td>
 					<td><div className="container" style={{ borderRight: this.state.showAFV ? `2px solid white` : "" }}>
-						<div style={{ width: `${this.state.intTempPercent}%`, height: "100%", background: "#4dfa40", borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
+						<div style={{ width: `${this.state.intTempPercent}%`, height: "100%", background: `${this.state.intTemp > 120 ? "red" : this.state.intTemp >= 100 ? "yellow" : "#4dfa40"}`, borderRight: !this.state.showAFV ? `2px solid white` : "" }}></div>
 					</div></td>
 					<td>{this.state.intTemp} &#176;C</td>
 
@@ -102,7 +102,7 @@ var Dash = React.createClass({
 					<td>SPEED</td>
 					<td style={{ textAlign: "center" }}><img src="1654014335661.jpg" width="30px" /></td>
 					<td><div className="container" style={{ borderRight: "2px solid white" }}>
-						<div style={{ width: `${this.state.mphPercent}%`, height: "100%", background: "#4dfa40", }}></div>
+						<div style={{ width: `${this.state.mphPercent}%`, height: "100%", background: `${this.state.mph > 180 ? "red" : this.state.mph >= 715 ? "yellow" : "#4dfa40"}`, }}></div>
 					</div></td>
 					<td>{this.state.mph} kph</td>
 				</tr>
