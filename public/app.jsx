@@ -30,7 +30,7 @@ const Dash = () => {
 
 	useEffect(() => {
 		const socket = io();
-
+ 
 		socket.on('ecuData', (data) => {
 			const rpmValue = data.rpm || 0;
 			const mphValue = data.mph || 0;
