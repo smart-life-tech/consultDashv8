@@ -1,0 +1,55 @@
+ Control & Interface
+
+1. Arduino Nano (5V, ATmega328P)
+   [LAFVIN Nano V3.0 (Pack of 3)](https://www.amazon.com/dp/B07G99NNXL)
+
+2. Nextion 4.3" Touchscreen Display (HMI)
+   [Nextion NX4827P043011C Intelligent Display](https://www.amazon.com/dp/B0BHMYNGCF)
+
+3. RS485 Transceiver Modules (for longdistance UART)
+   [ANMBEST MAX485 TTL to RS485 Converter (Pack of 10)](https://www.amazon.com/dp/B088Q8TD4V)
+
+
+
+ Motor Drivers & Relays
+
+4. 2Channel Relay Module (12V, optoisolated)
+   [HiLetgo 2 Channel 12V Relay Module](https://www.amazon.com/dp/B00LW15F42)
+
+
+
+  Power Supplies
+
+5. 12V DC Power Adapter (5A)
+   [ALITOVE 12V 5A Power Supply Adapter](https://www.amazon.com/dp/B08C594VNP)
+
+6. 12V to 5V DC Buck Converter (LM2596)
+   [Maxmoral LM2596 Step Down Converter (Pack of 2)](https://www.amazon.com/dp/B07MKQXNWG)
+
+
+
+ Motors
+
+7. 550 Geared DC Motor (12V, 100 RPM, Reversible)
+   [ZCERA JGB37550 Gear Motor 12V 100RPM](https://www.amazon.com/dp/B0DJ517HKY)
+
+8. NEMA 11Size DC Gear Motor (12V, 600 RPM)
+   [Bringsmart 12V 600RPM Micro Gear Motor](https://www.amazon.com/dp/B0C7GN1VPD)
+
+
+
+ Sensors (Optional for Homing)
+
+9. Magnetic Proximity Sensor (NJK5002C Hall Switch)
+   [HiLetgo NJK5002C Hall Sensor Switch](https://www.amazon.com/dp/B01MZYYCLH)
+
+
+
+ Wiring & Accessories
+
+10. Flexible Silicone Wire (16–22 AWG, assorted)
+    [EDGELEC 22 AWG Silicone Wire Kit (6 Colors)](https://www.amazon.com/dp/B07GD2BWPY)
+
+11. Jumper Wires for Arduino
+    [Elegoo 120pcs Male/Female Jumper Wires](https://www.amazon.com/dp/B01EV70C78)
+
