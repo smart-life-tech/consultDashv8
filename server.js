@@ -182,7 +182,7 @@ io.on('connection', function (socket) {
 
   //send data to client
   var dataInterval = setInterval(function () {
-      process.env.NODE_ENV =  'development'; // Set default environment to development
+    process.env.NODE_ENV = 'development'; // Set default environment to development
     // Change values so you can see it go up when developing
     if (process.env.NODE_ENV === "development") {
       if (rpm < 8000) {
